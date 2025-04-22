@@ -1,9 +1,17 @@
 // server.js
-import express from "express";
-import mongoose from "mongoose";
-import dotenv from "dotenv";
-import cors from "cors";
+import express from 'express';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import cors from 'cors';
 import subscriptionRoutes from './routes/subscriptionRoutes.js';
+import authRoutes from './routes/authRoutes.js'; // Assuming it's a .js file too
+import verifyToken from './middleware/verifyToken.js'; // Assuming it's a .js file
+
+// import authRoutes from "./routes/authRoutes.js";
+// import verifyToken from "./middleware/verifyToken.js";
+
+
+
 
 dotenv.config();
 const app = express();
@@ -17,7 +25,9 @@ app.get("/", (req, res) => {
     res.send("RepReminder Backend Running 💪");
 });
 // Routes 
-app.use('/api/subscriptions', subscriptionRoutes);
+app.use('/api/auth', authRoutes);
+
+app.use('/api/subscriptions', verifyToken, subscriptionRoutes);
 
 
 
