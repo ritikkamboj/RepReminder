@@ -1,9 +1,18 @@
-import React from 'react'
+import { AuthProvider } from "./context/AuthContext";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import LoginPage from "./pages/LoginPage";
 
 function App() {
   return (
-    <div className='text-3xl font-bold bg-red-500'>Jai Shree Ganesh !</div>
-  )
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          {/* Other routes will go here */}
+        </Routes>
+      </Router>
+    </AuthProvider>
+  );
 }
 
-export default App
+export default App;
