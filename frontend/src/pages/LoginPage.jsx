@@ -18,6 +18,7 @@ const LoginPage = () => {
       });
 
       const data = await res.json();
+      console.log(data);
       if (res.ok) {
         login(data); // Save token in context/localStorage
         navigate("/dashboard");
