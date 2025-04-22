@@ -3,6 +3,7 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
+import subscriptionRoutes from './routes/subscriptionRoutes.js';
 
 dotenv.config();
 const app = express();
@@ -15,8 +16,12 @@ app.use(express.json());
 app.get("/", (req, res) => {
     res.send("RepReminder Backend Running 💪");
 });
+// Routes 
+app.use('/api/subscriptions', subscriptionRoutes);
 
-// Connect to MongoDB
+
+
+// Connect to MongoDB   
 mongoose
     .connect(process.env.MONGO_URI)
     .then(() => {
