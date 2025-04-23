@@ -52,6 +52,12 @@ const DashboardPage = () => {
         >
           ❌ Expired Subscriptions
         </Link>
+        <Link
+          to="/add-customer"
+          className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-6 px-4 rounded-2xl shadow-md text-center transition"
+        >
+          😃 Add Customer 
+        </Link>
       </div>
     </div>
   );

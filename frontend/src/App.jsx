@@ -6,6 +6,7 @@ import DashboardPage from "./pages/DashboardPage";
 import ActivePage from "./pages/ActivePage";
 import ExpiringPage from "./pages/ExpiringPage";
 import ExpiredPage from "./pages/ExpiredPage";
+import AddCustomerPage from "./pages/AddCustomerPage";
 
 
 function App() {
@@ -49,6 +50,8 @@ function App() {
     </ProtectedRoute>
   }
 />
+<Route path="/add-customer" element={<AddCustomerPage />} />
+
         </Routes>
       </Router>
     </AuthProvider>
