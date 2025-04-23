@@ -11,7 +11,7 @@ const ExpiringPage = () => {
 
   useEffect(() => {
     const fetchCustomers = async () => {
-      const res = await fetch("http://localhost:5000/api/subscriptions", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/subscriptions`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -33,7 +33,7 @@ const ExpiringPage = () => {
   }, []);
 
   const handleRenew = async (id) => {
-    const res = await fetch(`http://localhost:5000/api/subscriptions/${id}`, {
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/subscriptions/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

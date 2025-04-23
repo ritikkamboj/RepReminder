@@ -12,7 +12,7 @@ const ExpiredPage = () => {
 
   const fetchExpired = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/subscriptions", {
+      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/subscriptions`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -31,7 +31,7 @@ const ExpiredPage = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/subscriptions/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/api/subscriptions/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchExpired(); // Refresh list
@@ -43,7 +43,7 @@ const ExpiredPage = () => {
   const handleRenew = async (id) => {
     try {
       await axios.put(
-        `http://localhost:5000/api/subscriptions/${id}`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/subscriptions/${id}`,
         {
           startDate: dates.startDate,
           endDate: dates.endDate,
