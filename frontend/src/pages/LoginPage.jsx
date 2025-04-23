@@ -18,10 +18,13 @@ const LoginPage = () => {
       });
 
       const data = await res.json();
-      console.log(data);
+      console.log(data.token);
       if (res.ok) {
+        console.log('reach here ')
         login(data); // Save token in context/localStorage
         navigate("/dashboard");
+        console.log('reach here ')
+
       } else {
         alert(data.message || "Login failed!");
       }
