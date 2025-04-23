@@ -1,55 +1,116 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useState, useEffect } from "react";
 
 const ExpiringPage = () => {
-  const [expiringCustomers, setExpiringCustomers] = useState([]);
+  const [customers, setCustomers] = useState([]);
+  const [renewId, setRenewId] = useState(null);
+  const [newStartDate, setNewStartDate] = useState("");
+  const [newEndDate, setNewEndDate] = useState("");
+
+  const data = JSON.parse(localStorage.getItem("user"));
+  const token = data.token ;
 
   useEffect(() => {
-    const fetchExpiring = async () => {
-      try {
-        const data = JSON.parse(localStorage.getItem("user"));
-        const token = data.token ;
-        console.log(token)
-        const res = await axios.get("http://localhost:5000/api/subscriptions", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+    const fetchCustomers = async () => {
+      const res = await fetch("http://localhost:5000/api/subscriptions", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
 
-        const today = new Date();
-        const fiveDaysLater = new Date();
-        fiveDaysLater.setDate(today.getDate() + 5);
+      // Filter customers expiring in 5 days
+      const today = new Date();
+      const in5Days = new Date();
+      in5Days.setDate(today.getDate() + 5);
 
-        const filtered = res.data.filter((customer) => {
-          const endDate = new Date(customer.endDate);
-          return endDate >= today && endDate <= fiveDaysLater && customer.status === "active";
-        });
+      const expiringSoon = data.filter((cust) => {
+        const end = new Date(cust.endDate);
+        return end >= today && end <= in5Days && cust.status === "active";
+      });
 
-        setExpiringCustomers(filtered);
-      } catch (error) {
-        console.error("Error fetching expiring customers:", error);
-      }
+      setCustomers(expiringSoon);
     };
 
-    fetchExpiring();
+    fetchCustomers();
   }, []);
 
+  const handleRenew = async (id) => {
+    const res = await fetch(`http://localhost:5000/api/subscriptions/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ startDate: newStartDate, endDate: newEndDate }),
+    });
+
+    if (res.ok) {
+      alert("Subscription renewed 🎉");
+      setRenewId(null);
+      setNewStartDate("");
+      setNewEndDate("");
+      // Refetch customers
+      window.location.reload(); // or trigger fetchCustomers again
+    } else {
+      alert("Renew failed 💔");
+    }
+  };
+
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold text-yellow-600 mb-4">⚠️ Expiring Subscriptions (within 5 days)</h2>
-      {expiringCustomers.length === 0 ? (
-        <p className="text-gray-500">No subscriptions expiring soon.</p>
-      ) : (
-        <div className="grid gap-4">
-          {expiringCustomers.map((cust) => (
-            <div key={cust._id} className="bg-white p-4 rounded-xl shadow border border-yellow-300">
-              <p><strong>Name:</strong> {cust.name}</p>
-              <p><strong>Phone:</strong> {cust.phone}</p>
-              <p><strong>End Date:</strong> {new Date(cust.endDate).toLocaleDateString()}</p>
+    <div className="p-4">
+      <h2 className="text-2xl font-bold mb-4">Expiring Customers (5 Days)</h2>
+      <div className="space-y-4">
+        {customers.map((cust) => (
+          <div
+            key={cust._id}
+            className="p-4 bg-white rounded shadow flex flex-col gap-2"
+          >
+            <div>
+              <span className="font-semibold">Name:</span> {cust.name}
             </div>
-          ))}
-        </div>
-      )}
+            <div>
+              <span className="font-semibold">End Date:</span>{" "}
+              {cust.endDate.slice(0, 10)}
+            </div>
+
+            {renewId === cust._id ? (
+              <div className="flex flex-col gap-2">
+                <input
+                  type="date"
+                  value={newStartDate}
+                  onChange={(e) => setNewStartDate(e.target.value)}
+                  className="border px-2 py-1 rounded"
+                  required
+                />
+                <input
+                  type="date"
+                  value={newEndDate}
+                  onChange={(e) => setNewEndDate(e.target.value)}
+                  className="border px-2 py-1 rounded"
+                  required
+                />
+                <button
+                  onClick={() => handleRenew(cust._id)}
+                  className="bg-green-600 text-white px-3 py-1 rounded"
+                >
+                  Save Renewal
+                </button>
+                <button
+                  onClick={() => setRenewId(null)}
+                  className="text-sm text-gray-500 underline"
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setRenewId(cust._id)}
+                className="bg-blue-600 text-white px-3 py-1 rounded"
+              >
+                🔁 Renew
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
